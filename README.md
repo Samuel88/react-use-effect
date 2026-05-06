@@ -2,6 +2,29 @@
 
 Questo progetto è un tutorial interattivo per imparare **useEffect** in React attraverso esempi pratici e ben commentati.
 
+## 🤔 Cos'è useEffect?
+
+`useEffect` è un **hook** di React che permette di eseguire codice in risposta ai cambiamenti del ciclo di vita di un componente — dopo che è stato montato, aggiornato o prima che venga rimosso.
+
+Serve a gestire i **side effects**: operazioni che interagiscono con qualcosa *fuori* dal componente React, come:
+
+- **Fetch di dati** da un'API
+- **Timer** (`setTimeout`, `setInterval`)
+- **Sottoscrizioni** a eventi del browser o websocket
+- **Manipolazione diretta del DOM** (es. `document.title`)
+- **Logging** e analytics
+
+Senza `useEffect`, queste operazioni andrebbero nel corpo del componente e verrebbero eseguite ad ogni render, causando comportamenti inattesi e loop infiniti.
+
+```jsx
+useEffect(() => {
+  // codice da eseguire dopo il render
+  return () => {
+    // cleanup: eseguito prima del prossimo effetto o all'unmount
+  };
+}, [/* dipendenze */]);
+```
+
 ## 🎯 Obiettivo
 
 Comprendere i concetti fondamentali di `useEffect`:
@@ -77,18 +100,6 @@ Anche se sono asincrone, React **garantisce** che:
 
 > **Regola generale**: `useEffect` di norma non blocca la UI — si esegue dopo il paint. Fa eccezione il caso React 18+ con eventi discreti (vedi sopra).
 
-## 🚀 Come eseguire il progetto
-
-```bash
-# Installa le dipendenze
-npm install
-
-# Avvia il server di sviluppo
-npm run dev
-```
-
-Poi apri il browser su `http://localhost:5173`
-
 ## 📚 Gli esempi
 
 ### **Esempio 1: Mount/Unmount**
@@ -128,26 +139,3 @@ src/
 │   └── Example3.jsx     # Side Effects
 └── App.jsx              # Menu per navigare tra esempi
 ```
-
-## 💡 Perché i commenti sono così lunghi?
-
-I commenti dettagliati nei primi esempi sono **intenzionali** per scopi didattici:
-- Aiutano a **interiorizzare** ogni passaggio del ciclo di vita React
-- **Scompongono** processi complessi in step comprensibili
-- Creano **abitudini mentali** per ragionare su mount/unmount/re-render
-
-Negli esempi successivi i commenti diventano più concisi quando i concetti base sono acquisiti.
-
-## 🔧 Tecnologie utilizzate
-
-- **React 19** + **Vite** per lo sviluppo
-- **Bootstrap 5.3.8** per lo styling minimo
-- **StrictMode** attivo per individuare problemi di cleanup
-
-## 📖 Prossimi passi
-
-Dopo aver completato questi esempi, sarai pronto per:
-- Effetti con timer e intervalli
-- Fetch di dati con useEffect
-- Gestione di eventi del browser
-- Pattern avanzati di cleanup
