@@ -43,6 +43,31 @@ React eseguirà la tua **setup function** al **primo render** (mount) e dopo ogn
 
 ⚡ **Eccezione importante (React 18+)**: Per eventi discreti da interazione utente (click, keydown), `useEffect` viene eseguito **sincronamente prima** del paint — stesso comportamento di `useLayoutEffect`.
 
+#### Approfondimento: eventi discreti e coerenza visiva
+
+In React 18, il comportamento di `useEffect` cambia a seconda di *cosa* ha scatenato il re-render: per certi eventi utente, React lo esegue prima che il browser aggiorni lo schermo.
+
+> **TLDR**: Se un `useEffect` viene scatenato da un click o da un tasto, React lo esegue **prima** del paint per evitare che l'utente veda la UI in uno stato visivo inconsistente.
+
+**Cos'è un evento discreto?**
+Un'azione puntuale e intenzionale dell'utente: click, keydown, tap. Si contrappone a eventi continui come scroll o resize.
+
+**Comportamento normale** (caso generale):
+```
+Render → Commit → Paint (utente vede la UI) → useEffect
+```
+
+**Con evento discreto (React 18+)**:
+```
+Render → Commit → useEffect → Paint
+```
+
+**Perché React fa questa eccezione?**
+Per coerenza visiva. Se un click apre un menu e `useEffect` ne calcola la posizione, eseguirlo dopo il paint farebbe vedere all'utente per un frame il menu posizionato male. Anticipandolo al pre-paint, la UI è già corretta quando l'utente la vede.
+
+**In pratica ti cambia qualcosa?**
+Quasi mai. Conta solo se il tuo `useEffect` modifica aspetti visivi e hai bisogno di sapere esattamente quando vengono applicati. Per fetch, log e sottoscrizioni non fa alcuna differenza.
+
 ⚡ **Ordine sequenziale garantito**:
 Anche se sono asincrone, React **garantisce** che:
 - **Mount**: Solo setup (prima volta)
