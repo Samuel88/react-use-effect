@@ -18,20 +18,12 @@ Senza `useEffect`, queste operazioni andrebbero nel corpo del componente e verre
 
 ```jsx
 useEffect(() => {
-  // codice da eseguire dopo il render
+  // setup: codice da eseguire al mount o quando le dipendenze sono cambiate
   return () => {
     // cleanup: eseguito prima del prossimo effetto o all'unmount
   };
 }, [/* dipendenze */]);
 ```
-
-## 🎯 Obiettivo
-
-Comprendere i concetti fondamentali di `useEffect`:
-- **Mount/Unmount** di componenti
-- **Dipendenze** e quando l'effetto si riesegue
-- **Cleanup function** per pulire gli effetti
-- **Side effects** del browser (document.title, timer, ecc.)
 
 ## 🔄 Le tre fasi di vita di React
 
