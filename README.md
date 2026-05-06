@@ -20,7 +20,7 @@ Ci sono due motivi per cui un componente si renderizza:
 ### **Render**
 React chiama ricorsivamente le funzioni dei componenti per creare il **Virtual DOM** (rappresentazione JavaScript della struttura HTML). In questa fase React:
 - Calcola cosa dovrebbe essere visualizzato
-- Confronta con il DOM precedente (**riconciliazione**)
+- Confronta con il **precedente albero React** (**riconciliazione**) — non con il DOM reale
 - **NON tocca ancora il DOM reale**
 
 ### **Commit**
@@ -36,13 +36,12 @@ React eseguirà la tua **setup function** al **primo render** (mount) e dopo ogn
 ### **Timing di esecuzione importante**
 ⚡ **Distinzione fondamentale**:
 - **`useLayoutEffect`**: si esegue **sincrono durante il commit**, prima del paint del browser (blocca il rendering)
-- **`useEffect`**: si esegue **generalmente dopo il paint**, ma può eseguire **prima del paint** se causato da interazione utente (click)
-- React 17+ ha reso `useEffect` completamente asincrono per migliorare le performance
+- **`useEffect`**: si esegue **generalmente dopo il paint** del browser
 
 ⚡ **Sequenza completa** (caso generale):
 1. **Render** → 2. **Commit** (DOM update + `useLayoutEffect`) → 3. **Paint** (UI visibile) → 4. **`useEffect`**
 
-⚡ **Eccezione importante**: Per eventi da interazione utente (click), `useEffect` può eseguire **prima** del paint
+⚡ **Eccezione importante (React 18+)**: Per eventi discreti da interazione utente (click, keydown), `useEffect` viene eseguito **sincronamente prima** del paint — stesso comportamento di `useLayoutEffect`.
 
 ⚡ **Ordine sequenziale garantito**:
 Anche se sono asincrone, React **garantisce** che:
@@ -51,7 +50,7 @@ Anche se sono asincrone, React **garantisce** che:
 - **Unmount**: Solo cleanup finale
 - Questo previene conflitti e memory leaks
 
-> **Regola generale**: `useEffect` non blocca mai la UI - si esegue dopo che l'utente vede già i cambiamenti!
+> **Regola generale**: `useEffect` di norma non blocca la UI — si esegue dopo il paint. Fa eccezione il caso React 18+ con eventi discreti (vedi sopra).
 
 ## 🚀 Come eseguire il progetto
 
