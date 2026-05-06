@@ -14,19 +14,44 @@ Comprendere i concetti fondamentali di `useEffect`:
 
 ### **Trigger**
 Ci sono due motivi per cui un componente si renderizza:
-- È il **render iniziale** del componente
-- Lo **state del componente** (o di un antenato) è stato aggiornato (re-render)
+- **Render iniziale**: quando l'app si avvia (`createRoot().render()`)
+- **Re-render**: quando lo **state del componente** (o di un antenato) viene aggiornato
 
 ### **Render**
-React chiama la funzione del componente, calcola l'albero di elementi, **valuta** gli hook, ma in questa fase **non tocca ancora il DOM**.
+React chiama ricorsivamente le funzioni dei componenti per creare il **Virtual DOM** (rappresentazione JavaScript della struttura HTML). In questa fase React:
+- Calcola cosa dovrebbe essere visualizzato
+- Confronta con il DOM precedente (**riconciliazione**)
+- **NON tocca ancora il DOM reale**
 
 ### **Commit**
-React applica le modifiche al DOM (inserisce/aggiorna/rimuove nodi), poi esegue gli effetti (`useEffect` e cleanup degli effetti precedenti). In questa fase:
+React applica le modifiche al DOM reale (inserisce/aggiorna/rimuove nodi). In questa fase:
 - Se un elemento viene **inserito** nel DOM si parla di **MOUNT**
 - Se un elemento viene **rimosso** dal DOM si parla di **UNMOUNT**
+- `useLayoutEffect` si esegue **durante** il commit, prima del paint
+- `useEffect` viene schedulato per **dopo** il commit e il paint
 
 ### **useEffect e le fasi di vita**
-React eseguirà la tua **setup function**. Dopo ogni commit con dipendenze cambiate, React prima eseguirà la **cleanup function** (se fornita) con i valori vecchi, e poi eseguirà la **setup function** con i valori nuovi.
+React eseguirà la tua **setup function** al **primo render** (mount) e dopo ogni commit con dipendenze cambiate. Quando le dipendenze cambiano, React prima eseguirà la **cleanup function** (se fornita) con i valori vecchi, e poi eseguirà la **setup function** con i valori nuovi. La **cleanup** viene chiamata anche una volta finale all'**unmount** del componente.
+
+### **Timing di esecuzione importante**
+⚡ **Distinzione fondamentale**:
+- **`useLayoutEffect`**: si esegue **sincrono durante il commit**, prima del paint del browser (blocca il rendering)
+- **`useEffect`**: si esegue **generalmente dopo il paint**, ma può eseguire **prima del paint** se causato da interazione utente (click)
+- React 17+ ha reso `useEffect` completamente asincrono per migliorare le performance
+
+⚡ **Sequenza completa** (caso generale):
+1. **Render** → 2. **Commit** (DOM update + `useLayoutEffect`) → 3. **Paint** (UI visibile) → 4. **`useEffect`**
+
+⚡ **Eccezione importante**: Per eventi da interazione utente (click), `useEffect` può eseguire **prima** del paint
+
+⚡ **Ordine sequenziale garantito**:
+Anche se sono asincrone, React **garantisce** che:
+- **Mount**: Solo setup (prima volta)
+- **Update** (dipendenze cambiate): Prima cleanup (valori vecchi) → poi setup (valori nuovi)
+- **Unmount**: Solo cleanup finale
+- Questo previene conflitti e memory leaks
+
+> **Regola generale**: `useEffect` non blocca mai la UI - si esegue dopo che l'utente vede già i cambiamenti!
 
 ## 🚀 Come eseguire il progetto
 
